@@ -270,19 +270,16 @@ void honk_decompress_process_byte(honk_state_t* state, FILE* output, uint8_t new
 		//Read the block count:
 		state->decompress_bytes_count = (size_t)(new_byte & 0x7F);
 
-		//Special case (should not happen):
-		if (state->decompress_bytes_count == 0)
+		//RLE or block?
+		if (new_byte & (1 << 7))
 		{
-			state->decompress_state = HONK_DECOMPRESS_STATE_STATUS;
+			//If the length of the RLE would be 0, we read one byte that will be repeated 0 times (quite pointless).
+			state->decompress_state = HONK_DECOMPRESS_STATE_RLE;
 		}
 		else
 		{
-			//RLE or block?
-			if (new_byte & (1 << 7))
-			{
-				state->decompress_state = HONK_DECOMPRESS_STATE_RLE;
-			}
-			else
+			//If the length of the block would be 0, we stay in HONK_DECOMPRESS_STATE_STATUS.
+			if (state->decompress_bytes_count > 0)
 			{
 				state->decompress_state = HONK_DECOMPRESS_STATE_BLOCK;
 			}
