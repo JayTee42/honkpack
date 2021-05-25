@@ -1,17 +1,15 @@
-CC = gcc
-CFLAGS = -c -Wall -g -Ofast
-LD = $(CC)
-LDFLAGS =
-
+CC=gcc
+LD=$(CC)
+CFLAGS = -c -Wall -O3
 TARGET = honkpack
 OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(LD) -o $@ $^ $(LDFLAGS)
+	$(LD) -o $@ $^
 
-%.o: %.cpp
+%.o: %.c
 	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
